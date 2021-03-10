@@ -1,0 +1,137 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon情報収集</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar navbar-light" style="background-color:#232F3E">
+        <a href="#" class="navbar-brand" style="color:white"><b>Amazon情報収集ツール</b></a>
+      </nav>
+      <div class="mt-4 card">
+        <h2 class="card-title">設定</h2>
+        <div class="card-body">
+          <p>ASINファイル名：<input type="search" id="ASIN_csv" value="ASIN.csv"/><p />
+          <p>不要ワードファイル名：<input type="search" id="delete_word_csv" value="delete.csv"/><p />
+          <p>スレッド数：<input type="search" id="thread_num" value="5"/><p />
+          <p>出力するファイル名：<input type="search" id="result_csv" value="result.csv"/><p />
+          <button id="button" class="btn btn-primary">実行</button>
+        </div>
+      </div>
+      <div class="mt-4 card">
+        <h2 class="card-title">ラクマ商品リサーチ</h2>
+        <div class="card-body">
+          <p>ラクマファイル名：<input type="search" id="rakuma_csv" value="RAKUMA.csv"/><p />
+          <p>利益値：<input type="search" class="text-right" id="gain" value="500"/><p />
+          <p>対象商品分類：<label><input type="radio" name="classifying" value="active" checked>出品中</label> &ensp; <label><input type="radio" name="classifying" value="inactive">終了済<p /></label>
+          <p>1URLあたりの収集ページ数上限：<input type="search" class="text-right" id="max_page" value="3"/><p />
+          <button id="research_button" class="btn btn-primary">実行</button>
+        </div>
+      </div>
+      <div class="mt-4 card">
+        <b><textarea id="textarea" rows="20" cols="100" readonly></textarea></b>
+      </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./eel.js"></script>
+    <script>
+      button.addEventListener("click", () => {
+        let ASIN_csv = document.getElementById("ASIN_csv").value.trim();
+        let delete_word_csv = document.getElementById("delete_word_csv").value.trim();
+        let result_csv = document.getElementById("result_csv").value.trim();
+        let thread_num = document.getElementById("thread_num").value.trim();
+
+        if (
+          !ASIN_csv ||
+          !delete_word_csv ||
+          !result_csv ||
+          !thread_num
+        ) {
+          alert("ファイル名を入力してください");
+        } else {
+          document.getElementById("textarea").value = "実行しました\n";
+          eel.main();
+        }
+      });
+
+      eel.expose(ASIN_file);
+      function ASIN_file() {
+        return document.getElementById("ASIN_csv").value.trim();
+      }
+
+      eel.expose(delete_word_file);
+      function delete_word_file() {
+        return document.getElementById("delete_word_csv").value.trim();
+      }
+
+      eel.expose(result_file);
+      function result_file() {
+        return document.getElementById("result_csv").value.trim();
+      }
+
+      eel.expose(thread_num);
+      function thread_num() {
+        return document.getElementById("thread_num").value.trim();
+      }
+
+      eel.expose(view_log_js);
+      function view_log_js(text) {
+        document.getElementById("textarea").value += text + "\n";
+      }
+
+      function get_classifying(){
+        alert
+        if(document.getElementsByName("classifying")[0].checked){
+          classifying = document.getElementsByName("classifying")[0].value;
+        }else{
+          classifying = document.getElementsByName("classifying")[1].value;
+        }
+        return classifying;
+      }
+
+      research_button.addEventListener("click", () => {
+        let rakuma_csv = document.getElementById("rakuma_csv").value.trim();
+        let gain = document.getElementById("gain").value.trim();
+        let classifying = get_classifying();
+        let max_page = document.getElementById("max_page").value.trim();
+
+        if(!rakuma_csv){
+          alert("ラクマファイル名を入力してください。");
+        }else if(!gain){
+          alert("利益値を入力してください。");                    
+        }else if(isNaN(gain)){
+          alert("利益値には数値を入力してください。");
+        }else if(!max_page){
+          alert("1URLあたりの収集ページ数上限を入力してください。");
+        }else if(isNaN(max_page)){
+          alert("1URLあたりの収集ページ数上限には数値を入力してください。");
+        }else{
+          document.getElementById("textarea").value = "実行しました\n";
+          eel.research_main();
+        }
+      });
+
+      eel.expose(rakuma_csv);
+      function rakuma_csv() {
+        return document.getElementById("rakuma_csv").value.trim();
+      }
+
+      eel.expose(gain);
+      function gain() {
+        return document.getElementById("gain").value.trim();
+      }
+
+      eel.expose(classifying);
+      function classifying() {
+        return get_classifying();
+      }
+
+      eel.expose(max_page);
+      function max_page() {
+        return document.getElementById("max_page").value.trim();
+      }
+    </script>
+  </body>
+</html>
